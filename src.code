@@ -1,0 +1,38 @@
+
+bool check_flag() {
+    bool r = true;
+    if ('R' != readchar()) { r = false; }
+    if ('C' != readchar()) { r = false; }
+    if ('T' != readchar()) { r = false; }
+    if ('F' != readchar()) { r = false; }
+    if ('{' != readchar()) { r = false; }
+    if ('m' != readchar()) { r = false; }
+    if ('y' != readchar()) { r = false; }
+    if ('_' != readchar()) { r = false; }
+    if ('b' != readchar()) { r = false; }
+    if ('r' != readchar()) { r = false; }
+    if ('4' != readchar()) { r = false; }
+    if ('i' != readchar()) { r = false; }
+    if ('n' != readchar()) { r = false; }
+    if ('_' != readchar()) { r = false; }
+    if ('i' != readchar()) { r = false; }
+    if ('s' != readchar()) { r = false; }
+    if ('_' != readchar()) { r = false; }
+    if ('f' != readchar()) { r = false; }
+    if ('_' != readchar()) { r = false; }
+    if ('_' != readchar()) { r = false; }
+    if ('k' != readchar()) { r = false; }
+    if ('e' != readchar()) { r = false; }
+    if ('d' != readchar()) { r = false; }
+    if ('}' != readchar()) { r = false; }
+    return r;
+}
+
+int main() {
+    print("Please input the flag:\n");
+    if (check_flag()) {
+        print("Correct!\n");
+    } else {
+        print("Wrong!\n");
+    }
+}
