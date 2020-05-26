@@ -65,15 +65,17 @@ for (let i = 0; i < bf.length; i++) {
     go func(c *sync.WaitGroup, w *sync.WaitGroup, j *sync.WaitGroup){
         for {
             c.Wait()
-${pattern[bf[i]]}
             c.Add(1)
+${pattern[bf[i]]}
         }
-    }(&n[${i}], &n[${i+1}], ${brackets[i] ? `&n[${brackets[i]}]` : `nil`})`
+    }(&n[${i}], &n[${i+1}], ${brackets[i] ? `&n[${brackets[i]} + ${bf[i] === '[' ? 1 : 0}]` : `nil`})`
 }
 
 code += `
     n[0].Done()
     n[${bf.length}].Wait()
+    io.WriteByte(10)
+    io.Flush()
     os.Exit(0)
 }
 `
