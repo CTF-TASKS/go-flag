@@ -13,17 +13,31 @@ for (let i = 0; i < bf.length; i++) {
     }
 }
 const pattern = {
-    '+': ``,
-    '-': ``,
-    '<': ``,
-    '>': ``,
+    '+': `
+        m[i]++
+        w.Done()`,
+    '-': `
+        m[i]--
+        w.Done()`,
+    '<': `
+        i--
+        w.Done()`,
+    '>': `
+        i++
+        w.Done()`,
     '.': `
-        os.Stdout.Write(m)`,
+        io.WriteByte(m[i])
+        io.Flush()
+        w.Done()`,
     '[': `
-        j.Add(1)
+        if m[i] == 0 {
+            j.Done()
+        } else {
+            w.Done()
+        }
     `,
     ']': `
-        j.Add(1)
+        j.Done()
     `,
 }
 let code = `
@@ -36,22 +50,31 @@ import (
 )
 
 func main() {
-    reader := bufio.NewReader(os.Stdin)
+	io := bufio.NewReadWriter(bufio.NewReader(os.Stdin), bufio.NewWriter(os.Stdout))
     m := make([]byte, 1000)
     i := 0
-    n := make([]sync.WaitGroup, ${bf.length + 2})
+    n := make([]sync.WaitGroup, ${bf.length + 1})
+    for idx := range n {
+        n[idx].Add(1)
+    }
 `
 
 for (let i = 0; i < bf.length; i++) {
     if (!pattern[bf[i]]) continue
     code += `
-    go func(w []sync.WaitGroup, j *sync.WaitGroup){
+    go func(c *sync.WaitGroup, w *sync.WaitGroup, j *sync.WaitGroup){
+        for {
+            c.Wait()
 ${pattern[bf[i]]}
-    }(n[${i}:${i+2}], ${brackets[i] ? `&n[${brackets[i]}]` : `nil`})`
+            c.Add(1)
+        }
+    }(&n[${i}], &n[${i+1}], ${brackets[i] ? `&n[${brackets[i]}]` : `nil`})`
 }
 
 code += `
-    n[${bf.length + 1}].Wait()
+    n[0].Done()
+    n[${bf.length}].Wait()
+    os.Exit(0)
 }
 `
 writeFileSync('bf.go', code)
