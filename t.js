@@ -49,8 +49,8 @@ const pattern = {
         i++
         w.Done()`,
     '.': `
-        io.WriteByte(m[i])
-        io.Flush()
+        out.WriteByte(m[i])
+        out.Flush()
         w.Done()`,
     ',': `
         m[i] = <- in
@@ -89,7 +89,7 @@ func main() {
             }
         }
     }()
-	io := bufio.NewReadWriter(bufio.NewReader(os.Stdin), bufio.NewWriter(os.Stdout))
+	out := bufio.NewWriter(os.Stdout)
     m := make([]byte, 1000)
     i := 0
     n := make([]sync.WaitGroup, ${bf.length + 1})
@@ -105,7 +105,7 @@ for (let i = 0; i < bf.length; i++) {
         for {
             c.Wait()
             c.Add(1)
-${pattern[bf[i]]}
+${pattern[bf[i]].trim()}
         }
     }(&n[${i}], &n[${i+1}], ${brackets[i] ? `&n[${brackets[i]} + ${bf[i] === '[' ? 1 : 0}]` : `nil`})`
 }
@@ -117,3 +117,4 @@ goCode += `
 }
 `
 writeFileSync('bf.go', goCode)
+execSync("go fmt")
