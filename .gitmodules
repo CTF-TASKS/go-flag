@@ -1,0 +1,3 @@
+[submodule "BF-it"]
+	path = BF-it
+	url = https://github.com/elikaski/BF-it.git
