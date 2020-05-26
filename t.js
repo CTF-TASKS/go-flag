@@ -36,34 +36,34 @@ for (let i = 0; i < bf.length; i++) {
     }
 }
 const pattern = {
-    '+': `
+    '+': (i) => `
         m[i]++
-        w.Done()`,
-    '-': `
+        n[${i+1}].Done()`,
+    '-': (i) => `
         m[i]--
-        w.Done()`,
-    '<': `
+        n[${i+1}].Done()`,
+    '<': (i) => `
         i--
-        w.Done()`,
-    '>': `
+        n[${i+1}].Done()`,
+    '>': (i) => `
         i++
-        w.Done()`,
-    '.': `
+        n[${i+1}].Done()`,
+    '.': (i) => `
         out.WriteByte(m[i])
         out.Flush()
-        w.Done()`,
-    ',': `
+        n[${i+1}].Done()`,
+    ',': (i) => `
         m[i] = <- in
-        w.Done()`,
-    '[': `
+        n[${i+1}].Done()`,
+    '[': (i, j) => `
         if m[i] == 0 {
-            j.Done()
+            n[${j+1}].Done()
         } else {
-            w.Done()
+            n[${i+1}].Done()
         }
     `,
-    ']': `
-        j.Done()
+    ']': (i, j) => `
+        n[${j}].Done()
     `,
 }
 let goCode = `
@@ -101,13 +101,13 @@ func main() {
 for (let i = 0; i < bf.length; i++) {
     if (!pattern[bf[i]]) continue
     goCode += `
-    go func(c *sync.WaitGroup, w *sync.WaitGroup, j *sync.WaitGroup){
+    go func(){
         for {
-            c.Wait()
-            c.Add(1)
-${pattern[bf[i]].trim()}
+            n[${i}].Wait()
+            n[${i}].Add(1)
+${pattern[bf[i]](i, brackets[i]).trim()}
         }
-    }(&n[${i}], &n[${i+1}], ${brackets[i] ? `&n[${brackets[i]} + ${bf[i] === '[' ? 1 : 0}]` : `nil`})`
+    }()`
 }
 
 goCode += `
