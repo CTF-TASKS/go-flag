@@ -1,0 +1,21 @@
+on: [push, pull_request]
+
+name: Build
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - name: build
+        run: go build go-flag.go
+      - name: strip
+        run: strip go-flag
+      - name: Upload elf file
+        uses: actions/upload-artifact@v1
+        with:
+          name: go-flag
+          path: go-flag

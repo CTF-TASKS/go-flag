@@ -116,5 +116,5 @@ goCode += `
     os.Exit(0)
 }
 `
-writeFileSync('bf.go', goCode)
+writeFileSync('go-flag.go', goCode)
 execSync("go fmt")
